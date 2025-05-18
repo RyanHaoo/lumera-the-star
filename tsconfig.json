@@ -1,0 +1,22 @@
+{
+  "include": ["src/**/*.ts", "test/**/*.ts"],
+  "compilerOptions": {
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "composite": true,
+    "forceConsistentCasingInFileNames": true,
+    "lib": ["ES2023"],
+    "module": "commonjs",
+    "rootDir": ".",
+    "paths": { "~/*": ["./app/*"] },
+    "noEmitOnError": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "sourceMap": true,
+    "stripInternal": true,
+    "strict": true,
+    "target": "ES2022",
+    "outDir": "build"
+  },
+  "exclude": ["node_modules"]
+}

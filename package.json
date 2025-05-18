@@ -1,0 +1,21 @@
+{
+  "name": "parser",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "@eslint/js": "^9.27.0",
+    "@types/node": "^22.7.5",
+    "eslint": "^9.27.0",
+    "eslint-config-prettier": "^10.1.5",
+    "globals": "^16.1.0",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.32.1"
+  },
+  "scripts": {
+    "compile": "tsc",
+    "prepare": "npm run compile",
+    "pretest": "npm run compile",
+    "posttest": "npm run lint"
+  }
+}
