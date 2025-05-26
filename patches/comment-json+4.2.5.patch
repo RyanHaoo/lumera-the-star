@@ -1,0 +1,76 @@
+diff --git a/node_modules/comment-json/index.d.ts b/node_modules/comment-json/index.d.ts
+index 0e90aa7..48953be 100644
+--- a/node_modules/comment-json/index.d.ts
++++ b/node_modules/comment-json/index.d.ts
+@@ -66,12 +66,14 @@ export type Reviver = (k: number | string, v: unknown) => unknown
+  * @param json A valid JSON string.
+  * @param reviver A function that transforms the results. This function is called for each member of the object.
+  * @param removesComments If true, the comments won't be maintained, which is often used when we want to get a clean object.
++ * @param patchKeys If a string, every keys in object will be appended `${patchKeys}${pointer}` to prevent duplicate keys being overwritten.
+  * If a member contains nested objects, the nested objects are transformed before the parent object is.
+  */
+ export function parse(
+   json: string,
+   reviver?: Reviver | null,
+-  removesComments?: boolean
++  removesComments?: boolean,
++  patchKeys?: false | string
+ ): CommentJSONValue
+ 
+ /**
+diff --git a/node_modules/comment-json/src/parse.js b/node_modules/comment-json/src/parse.js
+index aa5dd81..c37e12b 100644
+--- a/node_modules/comment-json/src/parse.js
++++ b/node_modules/comment-json/src/parse.js
+@@ -52,6 +52,8 @@ let current = null
+ let index
+ let reviver = null
+ 
++let patch_names = false
++
+ const clean = () => {
+   previous_props.length =
+   previous_hosts.length = 0
+@@ -240,6 +242,7 @@ const parse_object = () => {
+ 
+   let started = false
+   let name
++  let names = new Map()
+ 
+   parse_comments()
+ 
+@@ -269,6 +272,18 @@ const parse_object = () => {
+     expect('String')
+     name = JSON.parse(current.value)
+ 
++    const name_pointer = names.has(name) ? names.get(name_pointer) + 1 : 0
++    names.set(name, name_pointer)
++    if (typeof patch_names === 'string') {
++      name = name.concat(patch_names, String(name_pointer))
++    } else {
++      if (name_pointer > 0) {
++        const error = new SyntaxError(`Duplicate key: ${name}`)
++        Object.assign(error, current.loc.start)
++        throw error
++      }
++    }
++
+     set_prop(name)
+     assign_comments(PREFIX_BEFORE)
+ 
+@@ -395,13 +410,14 @@ function walk () {
+ 
+ const isObject = subject => Object(subject) === subject
+ 
+-const parse = (code, rev, no_comments) => {
++const parse = (code, rev, no_comments, patch_keys) => {
+   // Clean variables in closure
+   clean()
+ 
+   tokens = tokenize(code)
+   reviver = rev
+   remove_comments = no_comments
++  patch_names = patch_keys
+ 
+   if (!tokens.length) {
+     unexpected_end()
