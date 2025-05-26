@@ -1,22 +1,55 @@
+import { z } from "zod/v4";
+
+const anySchema = z.object({}).catchall(z.unknown());
+type ModelConstructor<Model extends AbstractModel> = new ({
+  id,
+  data,
+}: {
+  id: string;
+  data: any;
+}) => Model;
 /**
  * Base model class for different types of game data (card, event, .etc)
  */
-export abstract class AbstractModel<DataType extends object> {
-  readonly id: string;
-  data: DataType;
+export abstract class AbstractModel {
+  static readonly dataSchema: typeof anySchema;
 
-  constructor({ id, data }: { id: string; data: DataType }) {
+  readonly id: string;
+  data: object;
+
+  constructor({ id, data }: { id: string; data: object }) {
     this.id = id;
     this.data = data;
   }
-
-  abstract validate(obj: object): asserts obj is DataType;
 
   abstract getBrief(): {
     id: string;
     title: string | null;
     text: string | null;
   };
+
+  static deserialize<Model extends AbstractModel>(
+    this: ModelConstructor<Model> & { dataSchema: typeof anySchema },
+    data: object,
+  ): Model {
+    const parsed = this.dataSchema.parse(data);
+    const instance = new this({ id: String(parsed.id), data: parsed });
+    return instance;
+  }
+}
+
+export class IdExistsError extends Error {
+  constructor(id: string, from: string) {
+    super(`${from}: Fail to add entry with existed id "${id}".`);
+    this.name = "IdExistsError";
+  }
+}
+
+export class IdNotFoundError extends Error {
+  constructor(id: string, from: string) {
+    super(`${from}: Entry with id "${id}" not found.`);
+    this.name = "IdNotFoundError";
+  }
 }
 
 /**
@@ -24,20 +57,16 @@ export abstract class AbstractModel<DataType extends object> {
  * Mean to be extend for each game data class and initialized once for
  * holding all instances.
  */
-export abstract class ModelSet<ModelType extends AbstractModel<object>> {
+export abstract class ModelSet<ModelType extends AbstractModel> {
   private readonly entries: Map<string, ModelType>;
 
-  constructor(entries?: Array<ModelType>) {
-    if (entries) {
-      this.entries = new Map(entries.map((entry) => [entry.id, entry]));
-    } else {
-      this.entries = new Map();
-    }
+  constructor() {
+    this.entries = new Map();
   }
 
   add(entry: ModelType): void {
     if (this.entries.has(entry.id)) {
-      throw new Error(`Entry with id ${entry.id} already exists`);
+      throw new IdExistsError(entry.id, this.constructor.name);
     }
     this.entries.set(entry.id, entry);
   }
@@ -45,7 +74,7 @@ export abstract class ModelSet<ModelType extends AbstractModel<object>> {
   get(id: string): ModelType {
     const entry = this.entries.get(id);
     if (entry == null) {
-      throw new Error(`Entry with id ${id} not found`);
+      throw new IdNotFoundError(id, this.constructor.name);
     }
     return entry;
   }
