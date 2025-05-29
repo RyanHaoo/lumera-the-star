@@ -1,4 +1,4 @@
-import { z } from "zod/v4";
+import { string, z } from "zod/v4";
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 
@@ -7,7 +7,9 @@ import {
   ModelSet,
   IdExistsError,
   IdNotFoundError,
+  AbstractEmbeddedModel,
 } from "../baseModel.js";
+import { JSONParseError } from "~/utils/json.js";
 
 const TestSchema = z.strictObject({
   id: z.number(),
@@ -113,6 +115,71 @@ describe("Test ModelSet", () => {
           err.message,
           'TestModelSet: Entry with id "void" not found.',
         );
+        return true;
+      },
+    );
+  });
+});
+
+const EmbeddedSchema = z.array(z.int().positive());
+type EmbeddedData = z.infer<typeof EmbeddedSchema>;
+
+class EmbeddedModel extends AbstractEmbeddedModel {
+  static readonly dataSchema = EmbeddedSchema;
+  declare data: EmbeddedData;
+
+  format(): string {
+    return this.data.map(String).join(", ");
+  }
+}
+
+const ContainerSchema = z.strictObject({
+  id: z.int().positive(),
+  value: EmbeddedModel.asSchema(),
+});
+type ContainerData = z.infer<typeof ContainerSchema>;
+
+class ContainerModel extends AbstractModel {
+  static readonly dataSchema = ContainerSchema;
+  declare data: ContainerData;
+
+  constructor({ id, data }: { id: string; data: ContainerData }) {
+    super({ id, data });
+  }
+
+  getBrief() {
+    return {
+      id: this.id,
+      title: this.data.value.format(),
+      text: null,
+      detail: null,
+    };
+  }
+}
+
+describe("Test AbstractEmbeddedModel", () => {
+  it("Test validation pass", () => {
+    const parsed = ContainerModel.deserialize({
+      id: 1,
+      value: [1, 2],
+    });
+    assert(parsed.data.value instanceof EmbeddedModel);
+    assert.equal(parsed.data.value.format(), "1, 2");
+  });
+  it("Test validation fail", () => {
+    const data = { id: 1, value: [1, null] };
+    assert.throws(
+      () => ContainerModel.deserialize(data),
+      (err) => {
+        assert(err instanceof z.ZodError);
+        assert.deepEqual(err.issues, [
+          {
+            expected: "number",
+            code: "invalid_type",
+            path: ["value", 1],
+            message: "Invalid input: expected number, received null",
+          },
+        ]);
         return true;
       },
     );
