@@ -1,4 +1,3 @@
-import { output } from "zod";
 import { z } from "zod/v4";
 
 const anySchema = z.object({}).catchall(z.unknown());
@@ -85,24 +84,14 @@ export abstract class ModelSet<ModelType extends AbstractModel> {
   }
 }
 
-type EmbeddedConstructor<Embedded extends AbstractEmbeddedModel> = new (
-  data: any,
-) => Embedded;
-
 /**
- * Base model class for parsing grouped data embedded in other primitive types
+ * Base interface for parsing grouped data embedded in other primitive types
  */
-export abstract class AbstractEmbeddedModel {
-  static readonly dataSchema: z.ZodType;
-  data: unknown;
+export interface EmbeddedModelInstance {
+  data: any;
+}
 
-  constructor(data: unknown) {
-    this.data = data;
-  }
-
-  static asSchema<Model extends AbstractEmbeddedModel>(
-    this: EmbeddedConstructor<Model> & { dataSchema: z.ZodType },
-  ): z.ZodType<Model> {
-    return this.dataSchema.transform((data) => new this(data));
-  }
+export interface EmbeddedModelStatics {
+  new (data: any): EmbeddedModelInstance;
+  asSchema(): z.ZodType;
 }

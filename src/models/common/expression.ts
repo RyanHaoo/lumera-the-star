@@ -1,5 +1,5 @@
 import { z } from "zod/v4";
-import { AbstractEmbeddedModel } from "../baseModel";
+import { EmbeddedModelInstance, EmbeddedModelStatics } from "../baseModel";
 import { Identifier, IdentifierSchema } from "./private/expressionHelper";
 
 // const ContextSchema = z.literal([
@@ -48,10 +48,18 @@ const DotExpressionSchema = z
     };
   });
 
-export class DotExpression extends AbstractEmbeddedModel {
-  static readonly dataSchema = DotExpressionSchema;
-  declare data: DotExpressionData;
+export class DotExpression implements EmbeddedModelInstance {
+  data;
+
+  constructor(data: DotExpressionData) {
+    this.data = data;
+  }
+
+  static asSchema(): z.ZodType<DotExpression, string> {
+    return DotExpressionSchema.transform((data) => new this(data));
+  }
 }
+DotExpression as EmbeddedModelStatics;
 
 // --------------------
 // Parsing arithmetic
@@ -97,10 +105,18 @@ const ArithmeticSchema = z
     return result;
   });
 
-export class Arithmetic extends AbstractEmbeddedModel {
-  static readonly dataSchema = ArithmeticSchema;
-  declare data: ArithmeticData;
+export class Arithmetic implements EmbeddedModelInstance {
+  data;
+
+  constructor(data: ArithmeticData) {
+    this.data = data;
+  }
+
+  static asSchema(): z.ZodType<Arithmetic, string> {
+    return ArithmeticSchema.transform((data) => new this(data));
+  }
 }
+Arithmetic as EmbeddedModelStatics;
 
 // --------------------
 // Parsing Predicate
@@ -175,7 +191,15 @@ const PredicateSchema = z
     };
   });
 
-export class Predicate extends AbstractEmbeddedModel {
-  static readonly dataSchema = PredicateSchema;
-  declare data: PredicateData;
+export class Predicate implements EmbeddedModelInstance {
+  data;
+
+  constructor(data: PredicateData) {
+    this.data = data;
+  }
+
+  static asSchema(): z.ZodType<Predicate, [string, number]> {
+    return PredicateSchema.transform((data) => new this(data));
+  }
 }
+Predicate as EmbeddedModelStatics;

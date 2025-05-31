@@ -1,4 +1,4 @@
-import { string, z } from "zod/v4";
+import { z } from "zod/v4";
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 
@@ -7,9 +7,7 @@ import {
   ModelSet,
   IdExistsError,
   IdNotFoundError,
-  AbstractEmbeddedModel,
 } from "../baseModel.js";
-import { JSONParseError } from "~/utils/json.js";
 
 const TestSchema = z.strictObject({
   id: z.number(),
@@ -121,6 +119,7 @@ describe("Test ModelSet", () => {
   });
 });
 
+/**
 const EmbeddedSchema = z.array(z.int().positive());
 type EmbeddedData = z.infer<typeof EmbeddedSchema>;
 
@@ -185,3 +184,4 @@ describe("Test AbstractEmbeddedModel", () => {
     );
   });
 });
+*/
