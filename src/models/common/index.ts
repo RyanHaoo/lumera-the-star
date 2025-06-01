@@ -31,5 +31,5 @@ export type RiteKey = z.output<typeof RiteKey>;
 export const UpgradeKey = z.string().brand<"UpgradeKey">();
 export type UpgradeKey = z.output<typeof UpgradeKey>;
 
-export const TagKey = z.string().nonempty().brand<"TagKey">();
-export type TagKey = z.output<typeof TagKey>;
+export const TagName = z.string().nonempty().brand<"TagName">();
+export type TagName = z.output<typeof TagName>;

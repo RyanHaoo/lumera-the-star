@@ -1,12 +1,11 @@
 import { z } from "zod/v4";
 import { AbstractModel, ModelSet } from "./baseModel";
-import { IdToString, TagKey, IntBoolean } from "./common";
+import { TagName, IntBoolean } from "./common";
 
 const TagDataSchema = z.strictObject({
-  _code: z.string().nonempty().optional(), // lib-internal field storing the key of tag object
-  id: IdToString.pipe(TagKey),
-  name: z.string(),
-  code: z.string(),
+  id: z.int().positive(),
+  name: TagName,
+  code: z.string().nonempty(),
   type: z.enum(["buff", "attribute", "debuff"]),
   text: z.string(),
   tips: z.literal(""), // all empty at present
@@ -36,7 +35,7 @@ type TagData = z.output<typeof TagDataSchema>;
 export class Tag extends AbstractModel {
   static readonly dataSchema = TagDataSchema;
   static readonly keyField = "name"; // Tags are referenced by their name instead of id
-  declare key: TagKey;
+  declare key: TagName;
   declare data: TagData;
 
   constructor({ key, data }: { key: string; data: TagData }) {
