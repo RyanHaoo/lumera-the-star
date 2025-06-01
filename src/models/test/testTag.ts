@@ -47,7 +47,12 @@ describe("Test Tag model", () => {
   it("Parse data", () => {
     for (const data of tagData) {
       const tag = Tag.deserialize(data);
+      data.id = String(data.id) as any;
       assert.deepStrictEqual(tag.data, data);
+      assert.strictEqual(tag.key, data.name);
+
+      // @ts-expect-error
+      tag.key = "1";
     }
   });
 });

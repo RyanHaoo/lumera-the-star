@@ -5,12 +5,12 @@ import assert from "node:assert/strict";
 import {
   AbstractModel,
   ModelSet,
-  IdExistsError,
-  IdNotFoundError,
+  KeyExistsError,
+  KeyNotFoundError,
 } from "../baseModel.js";
 
 const TestSchema = z.strictObject({
-  id: z.number(),
+  id: z.int().transform(String),
   name: z.string(),
 });
 type TestData = z.infer<typeof TestSchema>;
@@ -19,12 +19,12 @@ class TestModel extends AbstractModel {
   static readonly dataSchema = TestSchema;
   declare data: TestData;
 
-  constructor({ id, data }: { id: string; data: TestData }) {
-    super({ id, data });
+  constructor({ key, data }: { key: string; data: TestData }) {
+    super({ key, data });
   }
 
   getBrief() {
-    return { id: "1", title: this.data.name, text: null, detail: null };
+    return { key: "1", title: this.data.name, text: null, detail: null };
   }
 }
 
@@ -38,8 +38,8 @@ describe("Test Model", () => {
   it("Test deserialize pass", () => {
     const data = { id: 1, name: "test" };
     const model = TestModel.deserialize(data);
-    assert.equal(model.id, "1");
-    assert.deepStrictEqual(model.data, data);
+    assert.equal(model.key, "1");
+    assert.deepStrictEqual(model.data, { id: "1", name: "test" });
   });
   it("Test deserialize for invalid data", () => {
     const data = { id: "invalid", name: "test", sus: "ඞ" };
@@ -68,10 +68,10 @@ describe("Test Model", () => {
 });
 
 describe("Test ModelSet", () => {
-  const data1 = { id: 0, name: "test1" };
-  const data2 = { id: 1, name: "test2" };
-  const model1 = new TestModel({ id: "1", data: data1 });
-  const model2 = new TestModel({ id: "2", data: data2 });
+  const data1 = { id: "0", name: "test1" };
+  const data2 = { id: "1", name: "test2" };
+  const model1 = new TestModel({ key: "1", data: data1 });
+  const model2 = new TestModel({ key: "2", data: data2 });
 
   it("Test get", () => {
     const modelSet = new TestModelSet();
@@ -94,24 +94,24 @@ describe("Test ModelSet", () => {
     assert.throws(
       () => modelSet.add(model1),
       (err) => {
-        assert(err instanceof IdExistsError);
+        assert(err instanceof KeyExistsError);
         assert.equal(
           err.message,
-          'TestModelSet: Fail to add entry with existed id "1".',
+          'TestModelSet: Fail to add entry with existed key "1".',
         );
         return true;
       },
     );
   });
-  it("Test get non-existing id", () => {
+  it("Test get non-existing key", () => {
     const modelSet = new TestModelSet();
     assert.throws(
       () => modelSet.get("void"),
       (err) => {
-        assert(err instanceof IdNotFoundError);
+        assert(err instanceof KeyNotFoundError);
         assert.equal(
           err.message,
-          'TestModelSet: Entry with id "void" not found.',
+          'TestModelSet: Entry with key "void" not found.',
         );
         return true;
       },

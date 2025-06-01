@@ -2,10 +2,10 @@ import { z } from "zod/v4";
 
 const anySchema = z.object({}).catchall(z.unknown());
 type ModelConstructor<Model extends AbstractModel> = new ({
-  id,
+  key,
   data,
 }: {
-  id: string;
+  key: string;
   data: any;
 }) => Model;
 /**
@@ -13,42 +13,53 @@ type ModelConstructor<Model extends AbstractModel> = new ({
  */
 export abstract class AbstractModel {
   static readonly dataSchema: typeof anySchema;
+  static readonly keyField: string = "id";
 
-  readonly id: string;
+  readonly key: string;
   data: object;
 
-  constructor({ id, data }: { id: string; data: object }) {
-    this.id = id;
+  constructor({ key, data }: { key: string; data: object }) {
+    this.key = key;
     this.data = data;
   }
 
   abstract getBrief(): {
-    id: string;
+    key: string;
     title: string | null;
     text: string | null;
   };
 
   static deserialize<Model extends AbstractModel>(
-    this: ModelConstructor<Model> & { dataSchema: typeof anySchema },
+    this: ModelConstructor<Model> & {
+      dataSchema: typeof anySchema;
+      keyField: string;
+    },
     data: object,
   ): Model {
     const parsed = this.dataSchema.parse(data);
-    const instance = new this({ id: String(parsed.id), data: parsed });
+    const key = parsed[this.keyField];
+    if (typeof key !== "string") {
+      throw new Error(`Key must be a string but got "${key}".`);
+    }
+    const instance = new this({
+      key: key,
+      data: parsed,
+    });
     return instance;
   }
 }
 
-export class IdExistsError extends Error {
-  constructor(id: string, from: string) {
-    super(`${from}: Fail to add entry with existed id "${id}".`);
-    this.name = "IdExistsError";
+export class KeyExistsError extends Error {
+  constructor(key: string, from: string) {
+    super(`${from}: Fail to add entry with existed key "${key}".`);
+    this.name = "KeyExistsError";
   }
 }
 
-export class IdNotFoundError extends Error {
-  constructor(id: string, from: string) {
-    super(`${from}: Entry with id "${id}" not found.`);
-    this.name = "IdNotFoundError";
+export class KeyNotFoundError extends Error {
+  constructor(key: string, from: string) {
+    super(`${from}: Entry with key "${key}" not found.`);
+    this.name = "KeyNotFoundError";
   }
 }
 
@@ -65,16 +76,16 @@ export abstract class ModelSet<ModelType extends AbstractModel> {
   }
 
   add(entry: ModelType): void {
-    if (this.entries.has(entry.id)) {
-      throw new IdExistsError(entry.id, this.constructor.name);
+    if (this.entries.has(entry.key)) {
+      throw new KeyExistsError(entry.key, this.constructor.name);
     }
-    this.entries.set(entry.id, entry);
+    this.entries.set(entry.key, entry);
   }
 
-  get(id: string): ModelType {
-    const entry = this.entries.get(id);
+  get(key: string): ModelType {
+    const entry = this.entries.get(key);
     if (entry == null) {
-      throw new IdNotFoundError(id, this.constructor.name);
+      throw new KeyNotFoundError(key, this.constructor.name);
     }
     return entry;
   }

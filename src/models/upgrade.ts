@@ -1,34 +1,37 @@
 import { z } from "zod/v4";
 import { AbstractModel, ModelSet } from "./baseModel";
-import { UpgradeId, CardId } from "./common";
+import { CardKey, IdToString, UpgradeKey } from "./common";
+
+const UpgradeIdToKey = IdToString.pipe(UpgradeKey);
 
 const UpgradeDataSchema = z.strictObject({
-  id: UpgradeId,
+  id: UpgradeIdToKey,
   name: z.string(),
   text: z.string(),
   cost: z.int().positive(),
   condition: z.object({
-    unlock_upgrade: z.optional(UpgradeId),
+    unlock_upgrade: z.optional(UpgradeIdToKey),
   }),
   icon: z.enum(["gain", "buff"]),
-  link_card: CardId,
+  link_card: IdToString.pipe(CardKey),
   effect: z.record(z.string(), z.unknown()), // TODO
-  incompatible: z.union([z.literal(0), UpgradeId]),
+  incompatible: z.union([z.literal(0), UpgradeIdToKey]),
 });
 
-type UpgradeData = z.infer<typeof UpgradeDataSchema>;
+type UpgradeData = z.output<typeof UpgradeDataSchema>;
 
 export class Upgrade extends AbstractModel {
   static readonly dataSchema = UpgradeDataSchema;
+  declare key: UpgradeKey;
   declare data: UpgradeData;
 
-  constructor({ id, data }: { id: string; data: UpgradeData }) {
-    super({ id, data });
+  constructor({ key, data }: { key: string; data: UpgradeData }) {
+    super({ key, data });
   }
 
   getBrief() {
     return {
-      id: this.id,
+      key: this.key,
       title: this.data.name,
       text: this.data.text,
     };

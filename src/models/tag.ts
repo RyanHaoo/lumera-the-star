@@ -1,9 +1,9 @@
 import { z } from "zod/v4";
 import { AbstractModel, ModelSet } from "./baseModel";
-import { TagId, IntBoolean } from "./common";
+import { IdToString, TagKey, IntBoolean } from "./common";
 
 const TagDataSchema = z.strictObject({
-  id: TagId,
+  id: IdToString.pipe(TagKey),
   name: z.string(),
   code: z.string(),
   type: z.enum(["buff", "attribute", "debuff"]),
@@ -30,19 +30,21 @@ const TagDataSchema = z.strictObject({
   }),
 });
 
-type TagData = z.infer<typeof TagDataSchema>;
+type TagData = z.output<typeof TagDataSchema>;
 
 export class Tag extends AbstractModel {
   static readonly dataSchema = TagDataSchema;
+  static readonly keyField = "name"; // Tags are referenced by their name instead of id
+  declare key: TagKey;
   declare data: TagData;
 
-  constructor({ id, data }: { id: string; data: TagData }) {
-    super({ id, data });
+  constructor({ key, data }: { key: string; data: TagData }) {
+    super({ key, data });
   }
 
   getBrief() {
     return {
-      id: this.id,
+      key: this.key,
       title: this.data.name,
       text: `[${this.data.type}] ${this.data.text}`,
     };
