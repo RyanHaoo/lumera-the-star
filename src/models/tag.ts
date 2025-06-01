@@ -3,6 +3,7 @@ import { AbstractModel, ModelSet } from "./baseModel";
 import { IdToString, TagKey, IntBoolean } from "./common";
 
 const TagDataSchema = z.strictObject({
+  _code: z.string().nonempty().optional(), // lib-internal field storing the key of tag object
   id: IdToString.pipe(TagKey),
   name: z.string(),
   code: z.string(),
