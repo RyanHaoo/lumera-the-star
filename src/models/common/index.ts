@@ -7,6 +7,19 @@ export const IntString = z
   .regex(/^[0-9]+$/, { error: "Must be an int in string form" });
 export const IdToString = z.int().positive().transform(String);
 
+export function OneOrMore<ZodT extends z.ZodType>(
+  Inner: ZodT,
+): z.ZodType<
+  Array<z.output<typeof Inner>>,
+  z.input<typeof Inner> | Array<z.input<typeof Inner>>
+> {
+  const Wrapped = z.union([
+    Inner.transform((inner) => [inner]),
+    z.array(Inner),
+  ]);
+  return Wrapped;
+}
+
 export const AfterStoryKey = z.string().brand<"AfterStoryKey">();
 export type AfterStoryKey = z.output<typeof AfterStoryKey>;
 
