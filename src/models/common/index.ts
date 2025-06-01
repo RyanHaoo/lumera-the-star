@@ -19,6 +19,9 @@ export type EventKey = z.output<typeof EventKey>;
 export const LootKey = z.string().brand<"LootKey">();
 export type LootKey = z.output<typeof LootKey>;
 
+export const OverKey = z.string().brand<"OverKey">();
+export type OverKey = z.output<typeof OverKey>;
+
 export const RiteKey = z.string().brand<"RiteKey">();
 export type RiteKey = z.output<typeof RiteKey>;
 
