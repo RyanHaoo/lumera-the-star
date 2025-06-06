@@ -1,12 +1,12 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 
-import { JSONParseError, stringify, parseObject } from "../json";
+import { JSONParseError, stringify, parseObject } from "../json.js";
 import {
   parse,
   RawJSONParseError,
   unpatchDistinctKeyRecur,
-} from "../private/jsonHelpers";
+} from "../private/jsonHelpers.js";
 import { CommentObject, parse as cParse, CommentArray } from "comment-json";
 
 function toCArray<T>(array: Array<T>): CommentArray<T> {

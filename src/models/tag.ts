@@ -1,6 +1,6 @@
 import { z } from "zod/v4";
-import { AbstractModel, ModelSet } from "./baseModel";
-import { TagName, IntBoolean } from "./common";
+import { AbstractModel, ModelSet } from "./baseModel.js";
+import { TagName, IntBoolean } from "./common/index.js";
 
 const TagDataSchema = z.strictObject({
   id: z.int().positive(),

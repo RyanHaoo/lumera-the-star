@@ -1,6 +1,6 @@
 import { z } from "zod/v4";
-import { EmbeddedModelInstance, EmbeddedModelStatics } from "../baseModel";
-import { Identifier, IdentifierSchema } from "./private/expressionHelper";
+import { EmbeddedModelInstance, EmbeddedModelStatics } from "../baseModel.js";
+import { Identifier, IdentifierSchema } from "./private/expressionHelper.js";
 
 // const ContextSchema = z.literal([
 //   "rite",
@@ -134,7 +134,11 @@ const PredicateSchema = z
 
     for (const operator of COMPARES) {
       if (left.endsWith(operator)) {
-        if (!EXPLICT_COMPARES.includes(operator as unknown as typeof EXPLICT_COMPARES[number])) {
+        if (
+          !EXPLICT_COMPARES.includes(
+            operator as unknown as (typeof EXPLICT_COMPARES)[number],
+          )
+        ) {
           ctx.issues.push({
             code: "invalid_value",
             input: operator,

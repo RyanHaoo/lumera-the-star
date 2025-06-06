@@ -1,7 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { z } from "zod/v4";
-import { OneOrMore } from "../";
+import { OneOrMore } from "../index.js";
 
 const StringSchema = z.string();
 const OneOrMoreString = OneOrMore(StringSchema);

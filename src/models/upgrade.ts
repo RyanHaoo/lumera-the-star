@@ -1,6 +1,6 @@
 import { z } from "zod/v4";
-import { AbstractModel, ModelSet } from "./baseModel";
-import { CardKey, IdToString, UpgradeKey } from "./common";
+import { AbstractModel, ModelSet } from "./baseModel.js";
+import { CardKey, IdToString, UpgradeKey } from "./common/index.js";
 
 const UpgradeIdToKey = IdToString.pipe(UpgradeKey);
 

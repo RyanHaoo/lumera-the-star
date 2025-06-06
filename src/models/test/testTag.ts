@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { Tag } from "../tag";
+import { Tag } from "../tag.js";
 
 const raw1 = {
   id: 3000001,

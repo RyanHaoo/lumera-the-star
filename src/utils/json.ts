@@ -9,7 +9,7 @@ import {
   parse,
   JSONParseError,
   isNotSimpleJSONValue,
-} from "./private/jsonHelpers";
+} from "./private/jsonHelpers.js";
 
 export { JSONParseError, unpatchKey, stringify };
 

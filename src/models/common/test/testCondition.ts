@@ -1,8 +1,8 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 
-import { Condition } from "../condition";
-import { Predicate } from "../expression";
+import { Condition } from "../condition.js";
+import { Predicate } from "../expression.js";
 
 const ConditionSchema = Condition.asSchema();
 const PredicateSchema = Predicate.asSchema();

@@ -1,6 +1,6 @@
 import { z } from "zod/v4";
-import { AbstractModel, ModelSet } from "./baseModel";
-import { Condition, IntBoolean, OverKey } from "./common";
+import { AbstractModel, ModelSet } from "./baseModel.js";
+import { Condition, IntBoolean, OverKey } from "./common/index.js";
 
 const OverTextExtraSchema = z.strictObject({
   condition: Condition.asSchema(),

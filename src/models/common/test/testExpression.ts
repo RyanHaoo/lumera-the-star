@@ -1,7 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 
-import { DotExpression, Arithmetic, Predicate } from "../expression";
+import { DotExpression, Arithmetic, Predicate } from "../expression.js";
 
 const DotExpressionSchema = DotExpression.asSchema();
 const ArithmeticSchema = Arithmetic.asSchema();

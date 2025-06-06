@@ -1,7 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { Over } from "../over";
-import { Condition } from "../common";
+import { Over } from "../over.js";
+import { Condition } from "../common/index.js";
 
 const raw1 = {
   _id: "2",

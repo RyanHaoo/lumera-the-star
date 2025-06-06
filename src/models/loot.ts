@@ -1,5 +1,5 @@
 import { z } from "zod/v4";
-import { AbstractModel, ModelSet } from "./baseModel";
+import { AbstractModel, ModelSet } from "./baseModel.js";
 import {
   IdToString,
   IntString,
@@ -8,7 +8,7 @@ import {
   CardKey,
   RiteKey,
   EventKey,
-} from "./common";
+} from "./common/index.js";
 
 const LootItemBaseSchema = z.strictObject({
   num: IntString.transform(Number),

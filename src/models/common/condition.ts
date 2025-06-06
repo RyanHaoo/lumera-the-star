@@ -1,7 +1,7 @@
 import { z } from "zod/v4";
-import { EmbeddedModelInstance, EmbeddedModelStatics } from "../baseModel";
-import { Predicate } from "./expression";
-import { unpatchKey } from "~/utils/json";
+import { EmbeddedModelInstance, EmbeddedModelStatics } from "../baseModel.js";
+import { Predicate } from "./expression.js";
+import { unpatchKey } from "~/utils/json.js";
 
 const ConditionDataSchemaRaw = z
   .strictObject({
@@ -29,33 +29,35 @@ interface ConditionInternalData {
   predicates: Array<Predicate>;
 }
 
-const ConditionDataSchema: z.ZodType<ConditionInternalData, unknown> =
-  ConditionDataSchemaRaw.transform((obj, ctx): ConditionInternalData => {
-    const result: ConditionInternalData = {
-      ...(obj.all === undefined ? null : { allClause: obj.all }),
-      ...(obj.any === undefined ? null : { anyClause: obj.any }),
-      ...(obj.type === undefined ? null : { type: obj.type }),
-      predicates: [],
-    };
-    for (const [key, value] of Object.entries(obj)) {
-      if (isFixedKeys(key)) {
-        continue;
-      }
-      const predicateResult = Predicate.asSchema().safeParse([
-        unpatchKey(key)[0],
-        value,
-      ]);
-      if (predicateResult.success) {
-        result.predicates.push(predicateResult.data);
-      } else {
-        for (const issue of predicateResult.error.issues) {
-          issue.path.splice(0, 0, key);
-          ctx.issues.push(issue);
-        }
+const ConditionDataSchema: z.ZodType<
+  ConditionInternalData,
+  ConditionDataInput
+> = ConditionDataSchemaRaw.transform((obj, ctx): ConditionInternalData => {
+  const result: ConditionInternalData = {
+    ...(obj.all === undefined ? null : { allClause: obj.all }),
+    ...(obj.any === undefined ? null : { anyClause: obj.any }),
+    ...(obj.type === undefined ? null : { type: obj.type }),
+    predicates: [],
+  };
+  for (const [key, value] of Object.entries(obj)) {
+    if (isFixedKeys(key)) {
+      continue;
+    }
+    const predicateResult = Predicate.asSchema().safeParse([
+      unpatchKey(key)[0],
+      value,
+    ]);
+    if (predicateResult.success) {
+      result.predicates.push(predicateResult.data);
+    } else {
+      for (const issue of predicateResult.error.issues) {
+        issue.path.splice(0, 0, key);
+        ctx.issues.push(issue);
       }
     }
-    return result;
-  });
+  }
+  return result;
+});
 
 const FixedKeysEnum = ConditionDataSchemaRaw.keyof().enum;
 function isFixedKeys(key: string): key is keyof typeof FixedKeysEnum {

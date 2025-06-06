@@ -1,7 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { Loot } from "../loot";
-import { Condition } from "../common";
+import { Loot } from "../loot.js";
+import { Condition } from "../common/index.js";
 
 const raw1 = {
   id: 6000020,

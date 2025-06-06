@@ -1,6 +1,6 @@
 import { z } from "zod/v4";
-import { AbstractModel, ModelSet } from "./baseModel";
-import { Condition, IdToString, QuestKey } from "./common";
+import { AbstractModel, ModelSet } from "./baseModel.js";
+import { Condition, IdToString, QuestKey } from "./common/index.js";
 
 const QuestTargetSchema = z.strictObject({
   text: z.string(),

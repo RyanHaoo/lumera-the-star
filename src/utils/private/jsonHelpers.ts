@@ -71,7 +71,7 @@ type Position = {
 export class JSONParseError extends Error {
   position: Position;
 
-  constructor(position: Position, ...args: unknown[]) {
+  constructor(position: Position, ...args: string[]) {
     super(...args);
     this.name = "JSONParseError";
     this.position = position;
@@ -170,7 +170,7 @@ export function unpatchDistinctKeyRecur(obj: CommentObject): CommentObject {
     keyCounts.set(name, count === undefined ? 0 : count + 1);
   }
 
-  const unpatched: Record<string, unknown> = {};
+  const unpatched = {} as CommentObject;
   // copy non-prop comments
   cAssign(unpatched, obj, []);
   // copy props

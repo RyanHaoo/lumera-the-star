@@ -1,5 +1,5 @@
 import { z } from "zod/v4";
-export { Condition } from "./condition";
+export { Condition } from "./condition.js";
 
 export const IntBoolean = z.literal([0, 1]);
 export const IntString = z

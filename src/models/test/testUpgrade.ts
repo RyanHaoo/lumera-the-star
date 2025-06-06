@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { Upgrade } from "../upgrade";
+import { Upgrade } from "../upgrade.js";
 
 const raw1 = {
   id: 3300042,

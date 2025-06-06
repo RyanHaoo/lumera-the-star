@@ -1,6 +1,6 @@
 import { z } from "zod/v4";
-import { AbstractModel, ModelSet } from "./baseModel";
-import { Condition, AfterStoryKey, IdToString } from "./common";
+import { AbstractModel, ModelSet } from "./baseModel.js";
+import { Condition, AfterStoryKey, IdToString } from "./common/index.js";
 
 const AfterStoryExtraSchema = z.strictObject({
   key: z.string(),
