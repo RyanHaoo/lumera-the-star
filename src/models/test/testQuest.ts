@@ -118,7 +118,7 @@ describe("Test Quest model", () => {
   it("Parse data 1", () => {
     const quest = Quest.deserialize(raw1);
     assert.deepStrictEqual(quest.data, expect1);
-    // @ts-expect-error
+    // @ts-expect-error: assert key type is branded
     quest.key = "1";
   });
   it("Parse data 2 (counter)", () => {

@@ -49,7 +49,7 @@ describe("Test Tag model", () => {
     const tag = Tag.deserialize(raw1);
     assert.strictEqual(tag.key, "体魄");
     assert.deepStrictEqual(tag.data, expect1);
-    // @ts-expect-error
+    // @ts-expect-error: assert key type is branded
     tag.key = "1";
   });
   it("Parse data 2", () => {

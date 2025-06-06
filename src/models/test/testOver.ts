@@ -93,7 +93,7 @@ describe("Test Loot model", () => {
   it("Parse data 1", () => {
     const over = Over.deserialize(raw1);
     assert.deepStrictEqual(over.data, expect1);
-    // @ts-expect-error
+    // @ts-expect-error: assert key type is branded
     over.key = "1";
   });
   it("Parse data 2", () => {

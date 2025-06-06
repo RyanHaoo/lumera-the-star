@@ -1,18 +1,20 @@
 import { z } from "zod/v4";
 
-const anySchema = z.object({}).catchall(z.unknown());
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+type anySchema = z.ZodObject<{}>;
 type ModelConstructor<Model extends AbstractModel> = new ({
   key,
   data,
 }: {
   key: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any;
 }) => Model;
 /**
  * Base model class for different types of game data (card, event, .etc)
  */
 export abstract class AbstractModel {
-  static readonly dataSchema: typeof anySchema;
+  static readonly dataSchema: anySchema;
   static readonly keyField: string = "id";
 
   readonly key: string;
@@ -31,7 +33,7 @@ export abstract class AbstractModel {
 
   static deserialize<Model extends AbstractModel>(
     this: ModelConstructor<Model> & {
-      dataSchema: typeof anySchema;
+      dataSchema: anySchema;
       keyField: string;
     },
     data: object,
@@ -99,10 +101,10 @@ export abstract class ModelSet<ModelType extends AbstractModel> {
  * Base interface for parsing grouped data embedded in other primitive types
  */
 export interface EmbeddedModelInstance {
-  data: any;
+  data: unknown;
 }
 
 export interface EmbeddedModelStatics {
-  new (data: any): EmbeddedModelInstance;
+  new (data: unknown): EmbeddedModelInstance;
   asSchema(): z.ZodType;
 }

@@ -59,7 +59,7 @@ export class DotExpression implements EmbeddedModelInstance {
     return DotExpressionSchema.transform((data) => new this(data));
   }
 }
-DotExpression as EmbeddedModelStatics;
+void (DotExpression as EmbeddedModelStatics);
 
 // --------------------
 // Parsing arithmetic
@@ -116,7 +116,7 @@ export class Arithmetic implements EmbeddedModelInstance {
     return ArithmeticSchema.transform((data) => new this(data));
   }
 }
-Arithmetic as EmbeddedModelStatics;
+void (Arithmetic as EmbeddedModelStatics);
 
 // --------------------
 // Parsing Predicate
@@ -134,7 +134,7 @@ const PredicateSchema = z
 
     for (const operator of COMPARES) {
       if (left.endsWith(operator)) {
-        if (!EXPLICT_COMPARES.includes(operator as any)) {
+        if (!EXPLICT_COMPARES.includes(operator as unknown as typeof EXPLICT_COMPARES[number])) {
           ctx.issues.push({
             code: "invalid_value",
             input: operator,
@@ -202,4 +202,4 @@ export class Predicate implements EmbeddedModelInstance {
     return PredicateSchema.transform((data) => new this(data));
   }
 }
-Predicate as EmbeddedModelStatics;
+void (Predicate as EmbeddedModelStatics);

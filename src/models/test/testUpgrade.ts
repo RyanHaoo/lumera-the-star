@@ -66,7 +66,7 @@ describe("Test Upgrade model", () => {
   it("Parse data 1", () => {
     const upgrade = Upgrade.deserialize(raw1);
     assert.deepStrictEqual(upgrade.data, expect1);
-    // @ts-expect-error
+    // @ts-expect-error: assert key type is branded
     upgrade.key = "1";
   });
   it("Parse data 2", () => {

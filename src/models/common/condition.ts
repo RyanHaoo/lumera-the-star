@@ -29,7 +29,7 @@ interface ConditionInternalData {
   predicates: Array<Predicate>;
 }
 
-const ConditionDataSchema: z.ZodType<ConditionInternalData, any> =
+const ConditionDataSchema: z.ZodType<ConditionInternalData, unknown> =
   ConditionDataSchemaRaw.transform((obj, ctx): ConditionInternalData => {
     const result: ConditionInternalData = {
       ...(obj.all === undefined ? null : { allClause: obj.all }),
@@ -73,4 +73,4 @@ export class Condition implements EmbeddedModelInstance {
     return ConditionDataSchema.transform((data) => new this(data));
   }
 }
-Condition as EmbeddedModelStatics;
+void (Condition as EmbeddedModelStatics);

@@ -32,7 +32,7 @@ class TestModelSet extends ModelSet<TestModel> {
   static readonly model = TestModel;
 }
 
-null; // Test cases will not be auto-found without this line
+void 0; // Test cases will not be auto-found without this line
 
 describe("Test Model", () => {
   it("Test deserialize pass", () => {
